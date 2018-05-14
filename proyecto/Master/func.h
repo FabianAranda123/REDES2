@@ -41,42 +41,8 @@ int workerConnection(char worker_addr[], char workermirror_addr[], int worker_po
 
 
 
-///////////////Funcion que crea el servidor y devuelve una conexion con el cliente que nos envia archivos///////////////////////////
 
-int createServer(char dir[], int port)
-{
-	struct sockaddr_in server_info;   //Informacion del server Master
-	struct sockaddr_in client_info;   //Informacion del cliente 
-	int s;                            //Identificador del socckket
-	int canal;                        //Identificador del canal de comunicaciones
-	int clien_info_len;               //Tamano de la estructura de la informacion del cliente
 
-	char flag[]="f";
-
-	//Lenando la estructura con los datos del servidor master
-	bzero((char*)&server_info, sizeof(server_info));  //Llenando estructura de ceros
-	server_info.sin_family = AF_INET;                 //Tipo de socket es para conexion en internet
-	server_info.sin_port = htons(port);               //Puerto del servidor master
-	server_info.sin_addr.s_addr = inet_addr(dir);     //Direccion del servidor master
-	close (s);
-	//socket()
-	if((s = socket(AF_INET, SOCK_STREAM, 0))<0) //Creacion del socket de tipo SOCK_STREAM (Orientado a conexion)
-	{
-		printf("Error en socket() del server\n");
-		return -1;
-	}
-
-	//bind() 
-	setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int));      //Forzando a usar la mima direccion 
-	if(bind(s, (struct sockaddr*)&server_info, sizeof(server_info)) < 0)  //Ligando una direccion y puerto al socket
-	{
-		printf("Error en bind() del server\n");
-		return -1;
-	}
-
-	return s;
-
-}
 
 /////////////////////////// FUNCION QUE GUARDA ARCHIVO EN WORKERS //////////////////////////////
 void saveFile(int canal, char trama[])
@@ -141,19 +107,18 @@ void saveFile(int canal, char trama[])
 	printf("fileSize Final: %d\n", fileSize );
 	printf("b_ini %c\n", b_ini);	
 	contador = contador + fileSize;      //Aumenta contador para saber bytes en total
+
+
 	fclose(fp); //Cerramos archivo temporal
 	printf("Archivo recibido exitosamente  +..+  Bytes recibidos: %d\n",contador );
-
-
-
 
 
 	/////////////////// DIVIDIENDO ARCHIVO ENTRE 3 WORKERS///////////////////
 	
 	////Coonexion con Workers/////
 
-	strcpy(worker_addr, "192.168.43.226");       //Direccion de los worker
-	strcpy(workermirror_addr, "192.168.43.226"); //Direccion de mirrors
+	strcpy(worker_addr, "127.0.0.1");       //Direccion de los worker
+	strcpy(workermirror_addr, "127.0.0.1"); //Direccion de mirrors
 
 	printf("Conectando con workers o mirrors\n");
 
@@ -233,7 +198,7 @@ void saveFile(int canal, char trama[])
 
 	printf("Envio a worker o mirror 2 exitoso\n");
 
-	printf("Conexion con worker o mirror exitosa, enviando parte 2 a worker o mirror 2.....\n");
+	printf("Conexion con worker o mirror exitosa, enviando parte 3 a worker o mirror 3.....\n");
 	////////Conexion con worker o mirror 3////////
 	worker_port = 8888;       //Puerto del worker
 	workermirror_port = 8889; //Puerto del mirror
@@ -269,7 +234,15 @@ void saveFile(int canal, char trama[])
 	system(command);*/
 
 
+
+
 }
+
+
+
+
+
+
 
 
 
