@@ -86,6 +86,7 @@ int saveFile(int canal, char trama[])
 	int temp;
 	int bytes_read;
 	char command[34];
+	char cad[1] ={'a'};
 
 	//Obtenemos los datos de la primer trama enviada
 	memcpy(&b_ini, &trama[0], 1);       //Byte inicial 0 si es la ultima trama o 1 si aun faltan tramas por recibir
@@ -102,6 +103,8 @@ int saveFile(int canal, char trama[])
 		fwrite(&fileData, 1, fileSize, fp);          //Escribimos los datos en el archivo
 		contador = contador + fileSize;				 //aumenta contador para saber bytes en total
 		recv(canal, datarecv, sizeof(datarecv), 0);  //Recibimos una nueva trama
+		send(canal, cad, sizeof(cad), 0);  //Recibimos una nueva trama
+		
 		//Obtenemos los datos de la primer trama enviada
 		memcpy(&b_ini, &datarecv[0], 1);       //Byte inicial 0 si es la ultima trama o 1 si aun faltan tramas por recibir
 		memcpy(&fileSize, &datarecv[1], 4);    //Tamano de los datos que se enviaron
@@ -132,6 +135,7 @@ void getFile(int canal,char trama[])
 	FILE *fp;
 	int bytes_read = 100,tamBloque , i=0;
 	long lSize;
+	char cad[1] ={'a'};
 
 	memcpy(&fileName, &trama[5], 30);	
 	fp = fopen(fileName, "w");
@@ -153,7 +157,8 @@ void getFile(int canal,char trama[])
 		memcpy(&dataSend[1], &bytes_read, 4);
 		memcpy(&dataSend[5], &fileName, 30);
 		memcpy(&dataSend[35], &fileData, 100);
-		send(canal, dataSend, sizeof(dataSend), 0);	
+		send(canal, dataSend, sizeof(dataSend), 0);
+		recv(canal, cad, sizeof(cad), 0);	
  	
  	}
  	bytes_read = lSize % 100;
@@ -167,102 +172,10 @@ void getFile(int canal,char trama[])
 		memcpy(&dataSend[5], &fileName, 30);
 		memcpy(&dataSend[35], &fileData, 100);
 		send(canal, dataSend, sizeof(dataSend), 0);	
+		recv(canal, cad, sizeof(cad), 0);
  	
  	}
  	fclose(fp);
  
 //HTTP Y LA INTERFAZ  
- 
-using namespace std;
-
-SocketDatagrama::SocketDatagrama(int pto){
-	s = socket(AF_INET, SOCK_DGRAM, 0);
-	bzero( (char *)&direccionLocal, sizeof(direccionLocal));
-	direccionLocal.sin_family = AF_INET;
-	direccionLocal.sin_addr.s_addr = INADDR_ANY;
-	direccionLocal.sin_port = htons(pto);	
-	bind(s, (struct sockaddr *) &direccionLocal, sizeof(direccionLocal));	
-}	
-
-SocketDatagrama::~SocketDatagrama(){
-	delete this;
-}
-
-int SocketDatagrama::recibe(PaqueteDatagrama &p){	
-	socklen_t clilen = sizeof(direccionForanea);			
-	return recvfrom(s, (char *) p.obtieneDatos(),  p.obtieneLongitud(), 0, (struct sockaddr *)&direccionForanea, &clilen);
-}
-
-int SocketDatagrama::envia(PaqueteDatagrama &p){	
-	bzero( (char *)&direccionForanea, sizeof(direccionForanea));
-	direccionForanea.sin_family = AF_INET;
-	direccionForanea.sin_addr.s_addr = inet_addr(p.obtieneDireccion());	
-	direccionForanea.sin_port = htons(p.obtienePuerto());	
-	socklen_t clilen = sizeof(direccionForanea);	
-	return sendto(s, (char *)p.obtieneDatos(), p.obtieneLongitud(), 0, (struct sockaddr *)&direccionForanea, clilen);	
-}
-
-struct sockaddr_in SocketDatagrama::obtieneDireccionLocal(){
-	return direccionLocal;
-}
-
-struct sockaddr_in SocketDatagrama::obtieneDireccionForanea(){
-	return direccionForanea;
-}
-
-char* SocketDatagrama::IpToString(struct sockaddr_in *address){  	 
-  	char* stringResult = (char*) malloc(12);
-  	bzero(stringResult, 12);
-   	unsigned char * string = (unsigned char*)malloc(sizeof(address->sin_addr.s_addr)); 
-   	memcpy(string, &address->sin_addr.s_addr, sizeof(string));   	
-   	sprintf(stringResult, "%d.%d.%d.%d", (int)string[0], (int)string[1], (int)string[2], (int)string[3]);
-   	return stringResult;
-}
-
-//Funciones de la practica 12
-void SocketDatagrama::setTimeout(time_t segundos, suseconds_t microsegundos)
-{
-	temporizador.tv_sec = segundos;
-	temporizador.tv_usec = microsegundos;
-	setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (char *)&temporizador, sizeof(temporizador));
-}
-
-bool SocketDatagrama::unsetTimeout(bool timevar )
-{
-	 timeout= timevar;
-}
-void SocketDatagrama::cerrar( )
-{
-	//close(s);
-}
-
-
-int SocketDatagrama::recibeTimeout(PaqueteDatagrama &p)
-{
-	int n;
-	struct timeval tiempo1;
-	struct timeval tiempo2;
-	struct timeval res;
-	gettimeofday(&tiempo1,NULL);
-	socklen_t clilen = sizeof(direccionForanea);			
-	n= recvfrom(s, (char *) p.obtieneDatos(),  p.obtieneLongitud(), 0, (struct sockaddr *)&direccionForanea, &clilen);
-	//n=recvfrom(s, (char*)p, sizeof(PaqueteDatagrama), 0, (struct sockaddr *)&direccionForanea, sizeof(direccionForanea));
-	
-	if(n < 0){
-		if(errno==EWOULDBLOCK)
-			fprintf(stderr, "\nTiempo para recepción transcurrido\n");
-		else
-			fprintf(stderr,"\nError en recvfrom\n");
-	}
-	else{
-		gettimeofday(&tiempo2,NULL);
-		timersub(&tiempo2,&tiempo1,&res);
-		printf("Tiempo desde que se esperaba el mensaje hasta que se recibio: %ds %dus\n", res.tv_sec,res.tv_usec);
-		
-		cout<<"Tamaño del paquete recibido: "<<p.obtieneLongitud()<<endl;
-		
-		return n;
-	}
-	
-}
 }

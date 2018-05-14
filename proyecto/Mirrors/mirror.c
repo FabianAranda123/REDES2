@@ -32,6 +32,7 @@ int main(int argc, char* argv[]){
 	char byte_ini;
 	struct sockaddr_in client_info;   //Informacion del cliente 
 	int clien_info_len, s; 
+	char cad[1] ={'a'};
 	
 	
 	
@@ -40,18 +41,7 @@ int main(int argc, char* argv[]){
 		printf( "Faltan argumentos: [ip] [puerto]" );
 		exit(0);
 	}
-	/*CONEXIÓN CON EL ESPEJO*/ 
-
 	
-	/////////////Conexion con el mirror correspondiente/////////
-	/*strcpy(mirror_addr, argv[1]);    //Direccion del mirror
-	worker_port = atoi(argv[2]);                      //Puerto del mirror
-	if((id_mirror = mirrorConection(mirror_addr, mirror_port)) < 0) // conexion con el mirror
-	{
-		printf("Error al conectar con el espejo\n");
-	}*/
-
-
 	/////CREACION DEL SERVIDOR PARA ESPERAR CONEXIÓN CON EL MASTER O CON EL WORKER//////////
 	strcpy(server_addr, argv[1]);  //Direccion del servidor master
 	server_port = atoi(argv[2]);                //Puerto del servidor master
@@ -79,12 +69,12 @@ int main(int argc, char* argv[]){
 			printf("Error en accept() del server\n");
 			return -1;
 		}
-
 		printf("Se ha conectado el worker con la ip: %s, y el puerto %d\n", inet_ntoa(client_info.sin_addr), htons(client_info.sin_port));
 
 		//////////////////////////////////////////////////////////////////////////////////////
 		
 		recv(canal, trama, sizeof(trama), 0); //Recibimos la trama
+		send(canal, cad, sizeof(cad), 0); //Recibimos la trama
 		printf("El mirror recibio la primera trama\n");
 		memcpy(&byte_ini, &trama[0], 1);      //Obtenemos el primer byte
 

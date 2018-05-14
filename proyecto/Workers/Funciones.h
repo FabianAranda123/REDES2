@@ -1,6 +1,6 @@
 
 
-//////////////////Funcion que conecta con los workers/////////////
+//Función que establece la conexión con los mirrors
 int mirrorConection(char dir[], int port)
 {
 
@@ -67,21 +67,7 @@ int createServer(char dir[], int port)
 		return -1;
 	}
 
-	printf("\nServidor-Worker creado\nEsperando conexiones ...\n");
-	
-	//accept()
-		clien_info_len = sizeof(client_info);
-		if((canal = accept(s, (struct sockaddr *)&client_info, &clien_info_len)) < 0)  //Aceptando conexiones y creando el canal de comunicacion
-		{
-			printf("Error en accept() del server\n");
-			return -1;
-		}
-
-		printf("Se ha conectado el master con la ip: %s, y el puerto %d\n", inet_ntoa(client_info.sin_addr), htons(client_info.sin_port));
-	
-	
-	return canal; //Regresando el canal de comunicacion creado con el cliente
-
+	return s;
 
 }
 
@@ -95,10 +81,8 @@ int saveFile(int canal, char trama[], int id_mirror )
 	char fileName[30];  //Nombre del archivo que se esta recibindo
 	char fileData[100]; //Datos del archivo que se recibe
 	FILE *fp;			//Apuntador al archivo para guardar los dtaos y leerlos
-	int contador = 0 ;       //Contador que nos indica cuantos bytes en total se recibieron
-	int temp;
 	int bytes_read;
-	char command[34];
+	char cad[1] ={'a'};
 
 	//Obtenemos los datos de la primer trama enviada
 	memcpy(&b_ini, &trama[0], 1);       //Byte inicial 0 si es la ultima trama o 1 si aun faltan tramas por recibir
@@ -112,9 +96,13 @@ int saveFile(int canal, char trama[], int id_mirror )
 	while(b_ini == '1')         //Minetras no sea la trama final
 	{
 		fwrite(&fileData, 1, fileSize, fp);          //Escribimos los datos en el archivo
-		contador = contador + fileSize;				 //aumenta contador para saber bytes en total
+					
+		//recibimos la trama para guardar el archivo y envimos al mirror 
 		recv(canal, datarecv, sizeof(datarecv), 0);  //Recibimos una nueva trama
 		send(id_mirror, datarecv, sizeof(datarecv), 0);
+		
+		send(canal, cad, sizeof(cad), 0);
+		recv(id_mirror, cad, sizeof(cad), 0);
 		//Obtenemos los datos de la primer trama enviada
 		memcpy(&b_ini, &datarecv[0], 1);       //Byte inicial 0 si es la ultima trama o 1 si aun faltan tramas por recibir
 		memcpy(&fileSize, &datarecv[1], 4);    //Tamano de los datos que se enviaron
@@ -125,7 +113,7 @@ int saveFile(int canal, char trama[], int id_mirror )
 	}
 	//memcpy(&b_ini, &datarecv[0], 0);
 	fwrite(&fileData, 1, fileSize, fp);  //Escribimos los datos de la ultima trama
-	send(id_mirror, datarecv, sizeof(datarecv), 0); //Se envía la última trama
+	//send(id_mirror, datarecv, sizeof(datarecv), 0); //Se envía la última trama
 	
 	fclose(fp);//Cerramos el archivo
 
@@ -144,10 +132,11 @@ void getFile(int canal, char trama[])
 	int fileSize;       //Tamano de los datos que se esta recibiendo
 	char fileName[30];  //Nombre del archivo que se esta recibindo
 	char fileData[100]; //Datos del archivo que se recibe
-	char command[34];
+	
 	FILE *fp;
 	int bytes_read = 100,tamBloque , i=0;
 	long lSize;
+	char cad[1];
 
 	memcpy(&fileName, &trama[5], 30);	
 	fp = fopen(fileName, "w");
@@ -170,7 +159,7 @@ void getFile(int canal, char trama[])
 		memcpy(&dataSend[5], &fileName, 30);
 		memcpy(&dataSend[35], &fileData, 100);
 		send(canal, dataSend, sizeof(dataSend), 0);	
- 	
+		recv(canal, cad, sizeof(cad), 0);	
  	}
  	bytes_read = lSize % 100;
  	if(bytes_read != 0)
@@ -182,7 +171,8 @@ void getFile(int canal, char trama[])
 		memcpy(&dataSend[1], &bytes_read, 4);
 		memcpy(&dataSend[5], &fileName, 30);
 		memcpy(&dataSend[35], &fileData, 100);
-		send(canal, dataSend, sizeof(dataSend), 0);	
+		send(canal, dataSend, sizeof(dataSend), 0);
+		recv(canal, cad, sizeof(cad), 0);	
  	
  	}
  	fclose(fp);

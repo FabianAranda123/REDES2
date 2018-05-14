@@ -25,13 +25,14 @@ int main(int argc, char* argv[]){
 	char mirror_addr[15];   //Direccion de algun worker para realizar la conexion
 	int worker_port;	    //Puerto de algun worker para realizar la conexion
 
-	int canal, s;             //Canal de comunicacion
+	int canal;             //Canal de comunicacion
 	char server_addr[15];  //Direccion del servidor worker
 	int server_port;       //Puerto del servidor master
 	char trama[B_INI + TAM_DATA + NAME_FILE + DATA];  //Cadena donde se almacena la trama recibida
 	char byte_ini;
 	struct sockaddr_in client_info;   //Informacion del cliente 
-	int clien_info_len; 
+	int clien_info_len, s;
+	char cad[1] = {'y'}; 
 	
 	
 	if(argc < 3){
@@ -41,10 +42,9 @@ int main(int argc, char* argv[]){
 	}
 	/*CONEXIÓN CON EL ESPEJO*/ 
 
-	
 	/////////////Conexion con el mirror correspondiente/////////
 	strcpy(mirror_addr, argv[1]);    //Direccion del mirror
-	worker_port = atoi(argv[2]);                      //Puerto del mirror
+	worker_port = atoi(argv[2]);     //Puerto del mirror
 	
 	
 	if((id_mirror = mirrorConection(mirror_addr, worker_port)) < 0) // conexion con el mirror
@@ -58,29 +58,41 @@ int main(int argc, char* argv[]){
 	strcpy(server_addr, argv[3]);  //Direccion del servidor master
 	server_port = atoi(argv[4]);                //Puerto del servidor master
 
-	if((canal = createServer(server_addr, server_port)) < 0 ) //Creando un servidor y devolviendo un canal de comunicacion con el cliente
+	if((s = createServer(server_addr, server_port)) < 0 ) //Creando un servidor y devolviendo un canal de comunicacion con el cliente
 	{
 		printf("Error al creal el worker Server\n");
 		return -1;
 	}
 	
-
-	/////////////////////////////////// ETAPA DE  COMUNICACIONES ///////////////////////////////////////////////////////////////////////
+	
+///////// ETAPA DECOMUNICACIONES /////////////////////////
 
 	
 	while(1)  //Ciclo que permite estar siempre esperando peticiones del cliente
 	{
 		
+		printf("Esperando conexión con el Master\n");
+		//Creamos el canal de comunicación
+		clien_info_len = sizeof(client_info);
+		if((canal = accept(s, (struct sockaddr *)&client_info, &clien_info_len)) < 0)  //Aceptando conexiones y creando el canal de comunicacion
+		{
+			printf("Error en accept() del server\n");
+			return -1;
+		}
+		printf("Se ha conectado el masters con la ip: %s, y el puerto %d\n", inet_ntoa(client_info.sin_addr), htons(client_info.sin_port));
+		
+		
+		//Se recibe la primer trama
 		recv(canal, trama, sizeof(trama), 0); //Recibimos la trama
+		send(canal, cad, sizeof(cad), 0); 
 		memcpy(&byte_ini, &trama[0], 1);      //Obtenemos el primer byte
 
 		if((byte_ini == '1') || (byte_ini == '0')) //Cliente(Master) nos envia un archivo
 		{
 		
-			
-			saveFile(canal,trama, id_mirror); //Guardando archivo 
 			send(id_mirror, trama, sizeof(trama), 0);
-			
+			recv(id_mirror, cad, sizeof(cad), 0);
+			saveFile(canal,trama, id_mirror); //Guardando archivo 
 			
 		}
 		else if(byte_ini == '2') //Master solicita un archivo
