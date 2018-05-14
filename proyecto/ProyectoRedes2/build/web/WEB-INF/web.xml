@@ -4,9 +4,17 @@
         <servlet-name>UploadImage</servlet-name>
         <servlet-class>controlador.UploadImage</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>DownloadFile</servlet-name>
+        <servlet-class>controlador.DownloadFile</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>UploadImage</servlet-name>
         <url-pattern>/subirImagen</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DownloadFile</servlet-name>
+        <url-pattern>/getFile</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

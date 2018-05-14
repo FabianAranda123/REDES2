@@ -191,9 +191,12 @@ void recv_file( int fd_sock ) {
 	long rd = 0;
 	
 	printf("Conexion establecida con el cliente en el canal %d\n", fd_sock );
+	printf("RECEIVED FILE\n");
 	
 	recv( fd_sock, buf + 1, NAME_FILE - 1, 0 );
 	buf[0] = REQUEST_FILE;
+	printf("GET FILE: %s\n", buf );
+
 	send( fd_sock, buf, NAME_FILE, 0 );
 	printf("A la espera de bytes\n");
 	//Ciclo para recibir los archivos del cliente.
@@ -304,7 +307,7 @@ void* thread_proc( void *arg ) {
 
 	if( memcmp( file_name, flag, strlen( flag ) ) == 0 ) {
 		//Se solicito un archivo.
-		printf("get file %s\n", file_name);
+		printf("get file %s %lu\n", file_name, strlen( file_name ) );
 		recv_file( connfd );
 
 		//Cierra el canal de comunicación.

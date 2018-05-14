@@ -28,6 +28,33 @@ public class ConnectionMaster {
         this.c = c;
     }
     
+    public void getFile( String nameFile ) {
+        try {
+            OutputStream out = c.getClient().getOutputStream();
+            String flag = "GET_FILE_XD";
+            //out.write(b);
+            flag = completeStringFormat( flag );
+            nameFile = completeStringFormat( nameFile );
+                    
+            c.send( flag );
+            c.send( nameFile );
+            
+            out.flush();
+            out.close();
+            
+        } catch(IOException ioe) {
+            System.out.println("Exception during communication. Server probably closed connection.");
+            
+        } finally {
+            try {
+                // Close the socket before quitting
+                c.getClient().close();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }                
+        }
+    }
+    
     public void sendFile( Part image ) {
         try {
             byte[] bytes = new byte[100];
@@ -66,7 +93,7 @@ public class ConnectionMaster {
         }
     }
     
-    String p = " ";
+    private String p = "\0";
     private String completeStringFormat( String name ) {
         if( name.length() < 30 ) {
             int padding = 30 - name.length();

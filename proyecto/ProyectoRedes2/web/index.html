@@ -5,12 +5,12 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="assets/css/main.css" />
-         <style>
-          .thumb {
-            height: 300px;
-            border: 1px solid #000;
-            margin: 10px 5px 0 0;
-          }
+        <style>
+            .thumb {
+                height: 300px;
+                border: 1px solid #000;
+                margin: 10px 5px 0 0;
+            }
         </style>
     </head>
     <body class="landing">
@@ -64,38 +64,43 @@
                     <div class="inner">
                         <section>
                             <h4> Solicitar archivo </h4>
-                            <form method="post" action="subirImagen" enctype="multipart/form-data">
-                               
+                            <form method="post" action="getFile">
                                 <div class="row uniform">
                                     <div class="6u 12u$(xsmall)">
-                                        <input type="text" name="demo-name" id="demo-name" value="" placeholder="Nombre archivo" />
+                                        <input type="text" name="nameFile" id="nameFile" value="" placeholder="Nombre del archivo" />
                                     </div>
-                                    <div class="6u 12u$(xsmall)">
-                                        <input type="submit" name="demo-pedir" id ="demo-pedir"  style="background-color: #FF9900" >
-                                    </div>
-                                 
-                                    
-                                <div class="row uniform">
-                                    
-                                    
-                                    <h4> Cargar un archivo </h4>
-                                    <br/>
-                                    <br/>
-                                    <br/>
-                                    <div class="6u$ 12u$(xsmall)">
-                                        <label for="demo-file">Selecciona tu imágen.</label>
-                                        <input type="file" name="demo-file" id="demo-file">
-                                        
-                                        <br />
-                                        <output id="list"></output>
-                                    </div>
-                                    
-                                    
+                                
                                     <div class="12u$">
                                         <ul class="actions">
-                                            <li><input type="submit" value="Envia archivo" class="special" /></li>
+                                            <li><input type="submit" value="Solicitar archivo" class="special" /></li>
                                             <li><input type="reset" value="Reset" /></li>
                                         </ul>
+                                    </div>
+                                </div>
+                            </form>
+                            
+                            <form method="post" action="subirImagen" enctype="multipart/form-data">
+                                <div class="row uniform">
+                                    <div class="row uniform">
+                                        <h4> Cargar un archivo </h4>
+                                        <br/>
+                                        <br/>
+                                        <br/>
+                                        <div class="6u$ 12u$(xsmall)">
+                                            <label for="demo-file">Selecciona tu imágen.</label>
+                                            <input type="file" name="demo-file" id="demo-file">
+
+                                            <br />
+                                            <output id="list"></output>
+                                        </div>
+
+
+                                        <div class="12u$">
+                                            <ul class="actions">
+                                                <li><input type="submit" value="Envia archivo" class="special" /></li>
+                                                <li><input type="reset" value="Reset" /></li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </form>
@@ -128,8 +133,8 @@
         <script src="assets/js/util.js"></script>
         <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
         <script src="assets/js/main.js"></script>
-        <script src="assets/js/visualizar.js"> </script>
-        
+        <script src="assets/js/visualizar.js"></script>
+
 
     </body>
 </html>
