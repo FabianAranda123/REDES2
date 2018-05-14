@@ -82,7 +82,7 @@ int saveFile(int canal, char trama[], int id_mirror )
 	char fileData[100]; //Datos del archivo que se recibe
 	FILE *fp;			//Apuntador al archivo para guardar los dtaos y leerlos
 	int bytes_read;
-	char cad[1] ={'a'};
+	char cad='a';
 
 	//Obtenemos los datos de la primer trama enviada
 	memcpy(&b_ini, &trama[0], 1);       //Byte inicial 0 si es la ultima trama o 1 si aun faltan tramas por recibir
@@ -101,8 +101,8 @@ int saveFile(int canal, char trama[], int id_mirror )
 		recv(canal, datarecv, sizeof(datarecv), 0);  //Recibimos una nueva trama
 		send(id_mirror, datarecv, sizeof(datarecv), 0);
 		
-		send(canal, cad, sizeof(cad), 0);
-		recv(id_mirror, cad, sizeof(cad), 0);
+		send(canal, &cad, sizeof(char), 0);
+		recv(id_mirror, &cad, sizeof(char), 0);
 		//Obtenemos los datos de la primer trama enviada
 		memcpy(&b_ini, &datarecv[0], 1);       //Byte inicial 0 si es la ultima trama o 1 si aun faltan tramas por recibir
 		memcpy(&fileSize, &datarecv[1], 4);    //Tamano de los datos que se enviaron
@@ -136,7 +136,7 @@ void getFile(int canal, char trama[])
 	FILE *fp;
 	int bytes_read = 100,tamBloque , i=0;
 	long lSize;
-	char cad[1];
+	char cad;
 
 	memcpy(&fileName, &trama[5], 30);	
 	fp = fopen(fileName, "w");
@@ -159,7 +159,7 @@ void getFile(int canal, char trama[])
 		memcpy(&dataSend[5], &fileName, 30);
 		memcpy(&dataSend[35], &fileData, 100);
 		send(canal, dataSend, sizeof(dataSend), 0);	
-		recv(canal, cad, sizeof(cad), 0);	
+		recv(canal, &cad, sizeof(char), 0);	
  	}
  	bytes_read = lSize % 100;
  	if(bytes_read != 0)
@@ -172,7 +172,7 @@ void getFile(int canal, char trama[])
 		memcpy(&dataSend[5], &fileName, 30);
 		memcpy(&dataSend[35], &fileData, 100);
 		send(canal, dataSend, sizeof(dataSend), 0);
-		recv(canal, cad, sizeof(cad), 0);	
+		recv(canal, &cad, sizeof(char), 0);	
  	
  	}
  	fclose(fp);

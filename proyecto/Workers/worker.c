@@ -32,7 +32,7 @@ int main(int argc, char* argv[]){
 	char byte_ini;
 	struct sockaddr_in client_info;   //Informacion del cliente 
 	int clien_info_len, s;
-	char cad[1] = {'y'}; 
+	char cad = 'y'; 
 	
 	
 	if(argc < 3){
@@ -84,14 +84,14 @@ int main(int argc, char* argv[]){
 		
 		//Se recibe la primer trama
 		recv(canal, trama, sizeof(trama), 0); //Recibimos la trama
-		send(canal, cad, sizeof(cad), 0); 
+		send(canal, &cad, sizeof(char), 0); 
 		memcpy(&byte_ini, &trama[0], 1);      //Obtenemos el primer byte
 
 		if((byte_ini == '1') || (byte_ini == '0')) //Cliente(Master) nos envia un archivo
 		{
 		
 			send(id_mirror, trama, sizeof(trama), 0);
-			recv(id_mirror, cad, sizeof(cad), 0);
+			recv(id_mirror, &cad, sizeof(char), 0);
 			saveFile(canal,trama, id_mirror); //Guardando archivo 
 			
 		}

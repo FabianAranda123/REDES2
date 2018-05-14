@@ -32,7 +32,7 @@ int main(int argc, char* argv[]){
 	char byte_ini;
 	struct sockaddr_in client_info;   //Informacion del cliente 
 	int clien_info_len, s; 
-	char cad[1] ={'a'};
+	char cad ='a';
 	
 	
 	
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]){
 		//////////////////////////////////////////////////////////////////////////////////////
 		
 		recv(canal, trama, sizeof(trama), 0); //Recibimos la trama
-		send(canal, cad, sizeof(cad), 0); //Recibimos la trama
+		send(canal, &cad, sizeof(char), 0); //Recibimos la trama
 		printf("El mirror recibio la primera trama\n");
 		memcpy(&byte_ini, &trama[0], 1);      //Obtenemos el primer byte
 

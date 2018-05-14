@@ -69,7 +69,7 @@ void saveFile(int canal, char trama[])
 
 	char command[40];     //COmando para borarr el archivo local
 
-	char flag[] = "f";
+	char flag = 'f';
 
 
 	printf("Se solicito guardar un archivo\n");
@@ -93,11 +93,14 @@ void saveFile(int canal, char trama[])
 		printf("fileSize: %d\n", fileSize );
 		contador = contador + fileSize;
 		printf("b_ini %c\n", b_ini);				 //aumenta contador para saber bytes en total
-		if((recv(canal, datarecv, 135, 0))<0) 
-		{ //Recibimos una nueva trama
-			perror("error");
+		if((recv(canal, datarecv, 135, 0))<0)
+		{
+			perror("error recv\n");
 		}
-		send(canal, &flag, sizeof(flag), 0);
+		if((send(canal, &flag, sizeof(char), 0))<0)
+		{
+			perror("error  en send\n");
+		}
 		memcpy(&b_ini, &datarecv[0], 1);             //Byte inicial 0 si es la ultima trama o 1 si aun faltan tramas por recibir
 		memcpy(&fileSize, &datarecv[1], 4);	         //Tamano de los datos que se enviaron
 		memcpy(&fileData, &datarecv[35], 100);       //Datos del archivo
@@ -117,8 +120,8 @@ void saveFile(int canal, char trama[])
 	
 	////Coonexion con Workers/////
 
-	strcpy(worker_addr, "127.0.0.1");       //Direccion de los worker
-	strcpy(workermirror_addr, "127.0.0.1"); //Direccion de mirrors
+	strcpy(worker_addr, "192.168.1.192");       //Direccion de los worker
+	strcpy(workermirror_addr, "192.168.1.192"); //Direccion de mirrors
 
 	printf("Conectando con workers o mirrors\n");
 
@@ -147,7 +150,7 @@ void saveFile(int canal, char trama[])
 		memcpy(&datasend[5], &fileName, 30);		 //Copiando nombre del archivo a la trama
 		memcpy(&datasend[35], &fileData, 100);		 //Copiando bytes con el contenido del archivo a la trama
 		send(w, &datasend, sizeof(datasend), 0);     //Enviando trama al worker
-		recv(w, flag, sizeof(flag), 0);
+		recv(w, &flag, sizeof(char), 0);
 	} 
 
 	//Llenamos la ultima trama
@@ -158,7 +161,7 @@ void saveFile(int canal, char trama[])
 	memcpy(&datasend[5], &fileName, 30);		 //Copiando nombre del archivo a la trama
 	memcpy(&datasend[35], &fileData, 100);		 //Copiando bytes con el contenido del archivo a la trama
 	send(w, &datasend, sizeof(datasend), 0);     //Enviando trama al worker
-	recv(w, flag, sizeof(flag), 0);
+	recv(w, &flag, sizeof(char), 0);
 	printf("Envio a worker o mirror 1 exitoso\n");
 
 	////////Conexion con worker o mirror 2////////
@@ -183,7 +186,7 @@ void saveFile(int canal, char trama[])
 		memcpy(&datasend[5], &fileName, 30);		 //Copiando nombre del archivo a la trama
 		memcpy(&datasend[35], &fileData, 100);		 //Copiando bytes con el contenido del archivo a la trama
 		send(w, &datasend, sizeof(datasend), 0);     //Enviando trama al worker
-		recv(w, flag, sizeof(flag), 0);
+		recv(w, &flag, sizeof(char), 0);
 	} 
 
 	//Llenamos la ultima trama
@@ -194,7 +197,7 @@ void saveFile(int canal, char trama[])
 	memcpy(&datasend[5], &fileName, 30);		 //Copiando nombre del archivo a la trama
 	memcpy(&datasend[35], &fileData, 100);		 //Copiando bytes con el contenido del archivo a la trama
 	send(w, &datasend, sizeof(datasend), 0);     //Enviando trama al worker
-	recv(w, flag, sizeof(flag), 0);
+	recv(w, &flag, sizeof(char), 0);
 
 	printf("Envio a worker o mirror 2 exitoso\n");
 
@@ -214,7 +217,7 @@ void saveFile(int canal, char trama[])
 		memcpy(&datasend[5], &fileName, 30);		 //Copiando nombre del archivo a la trama
 		memcpy(&datasend[35], &fileData, 100);		 //Copiando bytes con el contenido del archivo a la trama
 		send(w, &datasend, sizeof(datasend), 0);     //Enviando trama al worker
-		recv(w, flag, sizeof(flag), 0);
+		recv(w, &flag, sizeof(char), 0);
 	}
 	b_ini = '0';                                 //Indicamos al worker que es la ultima trama
 	memcpy(&datasend, &b_ini, 1);				 //Copiando byte inicial a la trama
@@ -222,7 +225,7 @@ void saveFile(int canal, char trama[])
 	memcpy(&datasend[5], &fileName, 30);		 //Copiando nombre del archivo a la trama
 	memcpy(&datasend[35], &fileData, 100);		 //Copiando bytes con el contenido del archivo a la trama
 	send(w, &datasend, sizeof(datasend), 0);     //Enviando trama al worker
-	recv(w, flag, sizeof(flag), 0);
+	recv(w, &flag, sizeof(char), 0);
 
 	printf("Envio a worker o mirror 3 exitoso\n");
 
@@ -269,19 +272,19 @@ void getFile(int canal, char trama[])
 
 	char command[50]; //Comando para eliminar archivo local
 
-	char flag[]="f";
+	char flag='f';
 
 	memcpy(&fileName, &trama[5], 30);
 
 	fp = fopen(fileName, "w");     //ABRIENDO ARCHIVO DONDE SE JUNTARAN LAS PARTES QUE ENVIEN LOS WORKERS
 
 	//////////DIRECCIONES DE WORKERS Y MIRRORS
-	strcpy(worker_addr, "127.0.0.1");       //Direccion de los worker
-	strcpy(workermirror_addr, "127.0.0.1"); //Direccion de mirrors
+	strcpy(worker_addr, "192.168.1.192");       //Direccion de los worker
+	strcpy(workermirror_addr, "192.168.1.192"); //Direccion de mirrors
 
 
 
-
+/*
 
 	///////PIDIENDO ARCHIVO A WORKER O MIRROR 1/////////////////
 	worker_port = 6666;       //Puerto del worker
@@ -381,28 +384,33 @@ void getFile(int canal, char trama[])
 	fwrite(&datarecv[35], 1, fileSize, fp);
 
 
-	fclose(fp); //Cerrando archivo que se tiene en local
+	fclose(fp); //Cerrando archivo que se tiene en local 
+	*/
 
 	///////////ENVIANDO ARCHIVO AL CLIENTE/////////
+	printf("fileName : %s\n", fileName);
 	fp = fopen(fileName, "r");
+	printf("fp: %d", fp);
 
-	while((bytes_read = fread(fileData, 1, 100, fp))==100) //Mientras existan mas bytes por leer
+	while((bytes_read = fread(fileData, sizeof(char), 100, fp))==100) //Mientras existan mas bytes por leer
 	{
 		b_ini = '1';                                 //Indicamos que no es la ultima trama
 		memcpy(&datasend[0], &b_ini, 1);             //Copiando byte inical a la trama que se va a enviar       
 		memcpy(&datasend[1], &bytes_read, 4);        //Copiando numero de bytes que se envian a la trama que se va a enviar
 		memcpy(&datasend[5], &fileName, 30);         //Copiando nombre del archivo a la trama que se va a enviar
 		memcpy(&datasend[35], &fileData, 100);       //Copiando Datos del archivo a la trama que se va a enviar
-		send(canal, datasend, sizeof(datasend), 0);  //Enviando trama con 100 bytes de datos
-		recv(canal, flag, sizeof(flag), 0);
+		send(canal, &datasend, sizeof(datasend), 0);  //Enviando trama con 100 bytes de datos
+		recv(canal, &flag, sizeof(flag), 0);
+		printf("Se metio al while\n");
 	}
+	printf("bytesread %d\n", bytes_read);
 	b_ini = '0';                                  //Indicamos que es la ultima trama
 	memcpy(&datasend[0], &b_ini, 1);              //Copiando byte inical a la trama que se va a enviar 
 	memcpy(&datasend[1], &bytes_read, 4);         //Copiando numero de bytes que se envian a la trama que se va a enviar
 	memcpy(&datasend[5], &fileName, 30);          //Copiando nombre del archivo a la trama que se va a enviar
 	memcpy(&datasend[35], &fileData, 100);        //Copiando Datos del archivo a la trama que se va a enviar
-	send(canal, datasend, sizeof(datasend), 0);   //Enviando trama con bytes_read datos 
-	recv(canal, flag, sizeof(flag), 0);
+	send(canal, &datasend, sizeof(datasend), 0);   //Enviando trama con bytes_read datos 
+	recv(canal, &flag, sizeof(flag), 0);
 
 	fclose(fp); //Cerrando archivo
 

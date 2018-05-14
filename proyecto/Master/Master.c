@@ -32,9 +32,9 @@ int main()
 	struct sockaddr_in client_info;    //Informacion del cliente 
 	struct sockaddr_in server_info;    //Informacion del server Master
 	int clien_info_len;                //Tamano de la estructura del cliente
-	char flag[] = "f";
+	char flag = 'f';
 
-	strcpy(server_addr, "127.0.0.1");  //Direccion del servidor master
+	strcpy(server_addr, "192.168.1.115");  //Direccion del servidor master
 	server_port = 1111;                //Puerto del servidor master
 
 	//Lenando la estructura con los datos del servidor master
@@ -86,7 +86,8 @@ int main()
 		char trama[B_INI + TAM_DATA + NAME_FILE + DATA];  //Cadena donde se almacena la trama recibida
 
 		recv(canal, trama, sizeof(trama), 0);  //Recibimos la trama
-		send(canal, &flag, sizeof(flag), 0);   //Enviamos confirmacion
+		send(canal, &flag, sizeof(char), 0);   //Enviamos confirmacion
+		recv(canal, &flag, sizeof(char), 0);
 
 		if((trama[0] == '1') || (trama[0] == '0')) //Cliente nos envia un archivo
 		{
