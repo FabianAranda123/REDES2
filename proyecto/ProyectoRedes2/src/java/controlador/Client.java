@@ -49,7 +49,8 @@ public class Client {
     public Boolean send( String msg ) {
         try {
             DataOutputStream salida = new DataOutputStream( this.client.getOutputStream() );
-            salida.writeBytes( msg );
+            //salida.writeBytes( msg );
+            salida.writeChars( msg );
             //salida.writeUTF( msg );
             //System.out.println("modelo.Client.send() MENSAJE ENVIADO " + msg );
             

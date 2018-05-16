@@ -35,9 +35,9 @@ public class ConnectionMaster {
             //out.write(b);
             flag = completeStringFormat( flag );
             nameFile = completeStringFormat( nameFile );
-                    
-            c.send( flag );
-            c.send( nameFile );
+            
+            out.write( flag.getBytes(), 0, flag.getBytes().length );
+            out.write( nameFile.getBytes(), 0, nameFile.getBytes().length );
             
             out.flush();
             out.close();
@@ -61,11 +61,11 @@ public class ConnectionMaster {
             BufferedInputStream bis = new BufferedInputStream( image.getInputStream() );
             OutputStream out = c.getClient().getOutputStream();
             int count,file_size;
-
+            byte sen[] = new byte[TAM_TRAMA];
             
             String msg, nameFile = completeStringFormat( image.getName() );
-            //c.send( image.getName() + '\0' );
-            byte sen[] = new byte[TAM_TRAMA];
+            out.write( nameFile.getBytes(), 0, nameFile.getBytes().length );
+            
             while( ( count = bis.read( bytes ) ) > 0 ) {
                 System.out.println(count);
                 
@@ -93,7 +93,7 @@ public class ConnectionMaster {
         }
     }
     
-    private String p = "\0";
+    String p = "\0";
     private String completeStringFormat( String name ) {
         if( name.length() < 30 ) {
             int padding = 30 - name.length();

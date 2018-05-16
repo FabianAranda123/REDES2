@@ -23,7 +23,7 @@
 #define TAM_TRAMA TAM_HEADER + TAM_DATA
 #define TAM_PATH 255
 
-#define IP_MASTER "192.168.43.69"
+#define IP_MASTER "192.168.1.115"
 #define PORT 5000
 #define filename "incoming"
 #define NAME_DIR "files_recv"
@@ -127,17 +127,21 @@ int main(int argc, char *argv[])
 
 void recv_flag( int fd_sock ) {
 	char flag;
+	int n = 1;
 
 	if( recv( fd_sock, &flag, 1, 0 ) < 0 ) {
-		perror("send_flag");
+		perror("recv_flag");
+		n = 0;
 	}
+
+	printf("%c %d", flag, n );
 }
 
 void send_flag( int fd_sock ) {
 	char flag = 'X';
 
 	if( send( fd_sock, &flag, 1, 0 ) < 0 ) {
-		perror("recv_flag");
+		perror("send_flag");
 	}
 }
 
@@ -152,7 +156,7 @@ void send_file( char *file_name ) {
 
 	getSocket( &fd_sock );
 	connect_to_server( &fd_sock, IP_MASTER, 1111 ); //192.168.43.69
-	printf("CONECTADO");  
+	printf("CONECTADO");
 
 	fp = fopen( file_name, "r" );
 
@@ -187,34 +191,46 @@ void send_file( char *file_name ) {
 
 void recv_file( int fd_sock ) {
 	char buf[TAM_TRAMA], ruta[TAM_PATH];
-	int isFirstTrama = 1, fd_file;
+	int isFirstTrama = 1, fd_file, fd_sock_m;
 	long rd = 0;
 	
 	printf("Conexion establecida con el cliente en el canal %d\n", fd_sock );
 	printf("RECEIVED FILE\n");
 	
-	recv( fd_sock, buf + 1, NAME_FILE - 1, 0 );
+	if( recv( fd_sock, buf + END_OF_FILE + TAM_FILE, NAME_FILE, 0 ) < 0 ) {
+		perror("RECV_FILE NAME");
+	}
+
 	buf[0] = REQUEST_FILE;
+	int m = 100;
+	memcpy( buf + END_OF_FILE, &m, TAM_FILE );
 	printf("GET FILE: %s\n", buf );
 
-	send( fd_sock, buf, NAME_FILE, 0 );
+	getSocket( &fd_sock_m );
+	connect_to_server( &fd_sock_m, IP_MASTER, 1111 ); //192.168.43.69
+	printf("CONECTADO\n");
+
+	send( fd_sock_m, buf, NAME_FILE, 0 );
 	printf("A la espera de bytes\n");
 	//Ciclo para recibir los archivos del cliente.
-	while( 1 ) {
+	recv_flag( fd_sock_m );
 
-		recv_flag( fd_sock );
+	memset( buf, '\0', TAM_TRAMA );
+	while( 1 ) {
+		send_flag( fd_sock_m );
 
 		//Recibe la trama.
-		if( ( rd = recv( fd_sock, buf, TAM_TRAMA, 0 ) ) < 0 ) {
+		if( ( rd = recv( fd_sock_m, buf, TAM_TRAMA, 0 ) ) < 0 ) {
 			fprintf( stderr, "%s", "Error al recibir datos del cliente\n" );
-			fprintf( stderr, "Termino de la conexion con canal %d\n", fd_sock );
-			close( fd_sock );
+			fprintf( stderr, "Termino de la conexion con canal %d\n", fd_sock_m );
+			close( fd_sock_m );
 			return;
 		
 		} else {
 			//No hubo problema al recibir la trama.
 			//Verificamos si el archivo se esta enviando o se llego al ultimo paquete
-			int status = buf[0];
+			char status = buf[0];
+			printf("RECIBIDO status = %c buf = %s\n", status, buf );
 
 			if( status == SENDING ) {
 				//Se reciben los datos del archivos.
@@ -231,8 +247,8 @@ void recv_file( int fd_sock ) {
 				
 					if( fd_file < 0 ) {
 						printf("No se pudo crear el archivo %s\n\n", buf );
-						fprintf( stderr, "Termino de la conexion con canal %d\n", fd_sock );
-						close( fd_sock );
+						fprintf( stderr, "Termino de la conexion con canal %d\n", fd_sock_m );
+						close( fd_sock_m );
 						return;
 					}
 				
@@ -245,10 +261,10 @@ void recv_file( int fd_sock ) {
 				if( write( fd_file, buf + TAM_HEADER, count ) < 0 ) {
 					perror("Error al escribir en el fichero: ");
 					printf("BUF %s %ld\n", buf, rd );
-					fprintf( stderr, "Termino de la conexion con canal %d\n", fd_sock );
+					fprintf( stderr, "Termino de la conexion con canal %d\n", fd_sock_m );
 					
 					close( fd_file );
-					close( fd_sock );
+					close( fd_sock_m );
 					break;	
 				}
 			
@@ -265,8 +281,8 @@ void recv_file( int fd_sock ) {
 				if( write( fd_file, buf + TAM_HEADER, pr ) < 0 ) {
 					perror("Error al escribir en el fichero: ");
 					close( fd_file );
-					fprintf( stderr, "Termino de la conexion con canal %d\n", fd_sock );
-					close( fd_sock );
+					fprintf( stderr, "Termino de la conexion con canal %d\n", fd_sock_m );
+					close( fd_sock_m );
 					break;
 				}
 				
@@ -276,8 +292,8 @@ void recv_file( int fd_sock ) {
 			
 			} else {
 				printf("BUF %s; BUF[0] %d; STAUS %u READ %ld\n", buf, ntohl(buf[0]), status, rd );
-				fprintf( stderr, "Termino de la conexion con canal %d\n", fd_sock );
-				close( fd_sock );
+				fprintf( stderr, "Termino de la conexion con canal %d\n", fd_sock_m );
+				close( fd_sock_m );
 				close( fd_file );
 				break;
 			}
@@ -285,8 +301,6 @@ void recv_file( int fd_sock ) {
 			//Limpiamos el buffer de datos.
 			memset( buf + TAM_HEADER, 0, TAM_DATA );
 		}
-
-		send_flag( fd_sock );
 	}
 }
 
@@ -303,7 +317,9 @@ void* thread_proc( void *arg ) {
 	** Quiere decir que se solicitó un archivo, en caso contrario se espera recibir
 	** un fichero cuyo nombre se almacenó en buffer.
 	*/
-	recv( connfd, file_name, NAME_FILE, 0 );
+	if( recv( connfd, file_name, NAME_FILE, 0 ) < 0 ) {
+		perror("RECV THREAD_PROC");
+	}
 
 	if( memcmp( file_name, flag, strlen( flag ) ) == 0 ) {
 		//Se solicito un archivo.
