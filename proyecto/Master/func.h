@@ -120,8 +120,8 @@ void saveFile(int canal, char trama[])
 	
 	////Coonexion con Workers/////
 
-	strcpy(worker_addr, "192.168.1.192");       //Direccion de los worker
-	strcpy(workermirror_addr, "192.168.1.192"); //Direccion de mirrors
+	strcpy(worker_addr, "192.168.0.3");       //Direccion de los worker
+	strcpy(workermirror_addr, "192.168.0.3"); //Direccion de mirrors
 
 	printf("Conectando con workers o mirrors\n");
 
@@ -279,12 +279,12 @@ void getFile(int canal, char trama[])
 	fp = fopen(fileName, "w");     //ABRIENDO ARCHIVO DONDE SE JUNTARAN LAS PARTES QUE ENVIEN LOS WORKERS
 
 	//////////DIRECCIONES DE WORKERS Y MIRRORS
-	strcpy(worker_addr, "192.168.1.192");       //Direccion de los worker
-	strcpy(workermirror_addr, "192.168.1.192"); //Direccion de mirrors
+	strcpy(worker_addr, "192.168.0.3");       //Direccion de los worker
+	strcpy(workermirror_addr, "192.168.0.3"); //Direccion de mirrors
 
 
 
-/*
+
 
 	///////PIDIENDO ARCHIVO A WORKER O MIRROR 1/////////////////
 	worker_port = 6666;       //Puerto del worker
@@ -385,7 +385,7 @@ void getFile(int canal, char trama[])
 
 
 	fclose(fp); //Cerrando archivo que se tiene en local 
-	*/
+	
 
 	///////////ENVIANDO ARCHIVO AL CLIENTE/////////
 	printf("fileName : %s\n", fileName);

@@ -34,7 +34,7 @@ int main()
 	int clien_info_len;                //Tamano de la estructura del cliente
 	char flag = 'f';
 
-	strcpy(server_addr, "192.168.1.115");  //Direccion del servidor master
+	strcpy(server_addr, "192.168.0.3");  //Direccion del servidor master
 	server_port = 1111;                //Puerto del servidor master
 
 	//Lenando la estructura con los datos del servidor master
