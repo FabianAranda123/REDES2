@@ -17,6 +17,7 @@
 #define TAM_DATA 4     //Tamano del contenido de datos
 #define NAME_FILE 30   //Bytes que ocntienen el nombre del archivo que se desea guardar o recuperar de los servidores
 #define DATA 100       //Bytes que contienen los datos del archivo que se desea guardar o recuperar de los servidores
+#define SERV_ADDR "127.0.0.1"
 
 
 
@@ -34,7 +35,7 @@ int main()
 	int clien_info_len;                //Tamano de la estructura del cliente
 	char flag = 'f';
 
-	strcpy(server_addr, "192.168.0.3");  //Direccion del servidor master
+	strcpy(server_addr, SERV_ADDR);  //Direccion del servidor master
 	server_port = 1111;                //Puerto del servidor master
 
 	//Lenando la estructura con los datos del servidor master

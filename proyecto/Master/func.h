@@ -1,4 +1,10 @@
 
+#define WORKER_ADDR "127.0.0.1"
+#define MIRROR_ADDR "127.0.0.1"
+
+
+
+
 ///////////////Funcion que permite hacer conexion con workrs o mirrors
 int workerConnection(char worker_addr[], char workermirror_addr[], int worker_port, int workermirror_port)
 {
@@ -120,8 +126,8 @@ void saveFile(int canal, char trama[])
 	
 	////Coonexion con Workers/////
 
-	strcpy(worker_addr, "192.168.0.3");       //Direccion de los worker
-	strcpy(workermirror_addr, "192.168.0.3"); //Direccion de mirrors
+	strcpy(worker_addr, WORKER_ADDR);       //Direccion de los worker
+	strcpy(workermirror_addr, MIRROR_ADDR); //Direccion de mirrors
 
 	printf("Conectando con workers o mirrors\n");
 
@@ -232,9 +238,9 @@ void saveFile(int canal, char trama[])
 	fclose (fp); //Cerrando archivo 
 
 	//Eliminamos el archivo creado ya que ha sido enviado
-	/*strcpy(command, "rm \0");
+	strcpy(command, "rm \0");
 	strcat(command, fileName);
-	system(command);*/
+	system(command);
 
 
 
@@ -279,8 +285,8 @@ void getFile(int canal, char trama[])
 	fp = fopen(fileName, "w");     //ABRIENDO ARCHIVO DONDE SE JUNTARAN LAS PARTES QUE ENVIEN LOS WORKERS
 
 	//////////DIRECCIONES DE WORKERS Y MIRRORS
-	strcpy(worker_addr, "192.168.0.3");       //Direccion de los worker
-	strcpy(workermirror_addr, "192.168.0.3"); //Direccion de mirrors
+	strcpy(worker_addr, WORKER_ADDR);       //Direccion de los worker
+	strcpy(workermirror_addr, MIRROR_ADDR); //Direccion de mirrors
 
 
 
@@ -415,9 +421,9 @@ void getFile(int canal, char trama[])
 	fclose(fp); //Cerrando archivo
 
 	//Eliminamos el archivo creado ya que ha sido enviado
-	/*strcpy(command, "rm \0");
+	strcpy(command, "rm \0");
 	strcat(command, fileName);
-	system(command);*/
+	system(command);
 
 
 }
