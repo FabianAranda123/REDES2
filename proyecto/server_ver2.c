@@ -23,7 +23,7 @@
 #define TAM_TRAMA TAM_HEADER + TAM_DATA
 #define TAM_PATH 255
 
-#define IP_MASTER "192.168.1.115"
+#define IP_MASTER "127.0.0.1" //"192.168.1.115"
 #define PORT 5000
 #define filename "incoming"
 #define NAME_DIR "files_recv"
