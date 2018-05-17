@@ -238,6 +238,8 @@ void saveFile(int canal, char trama[])
 	fclose (fp); //Cerrando archivo 
 
 	//Eliminamos el archivo creado ya que ha sido enviado
+	printf("Archivo recibido correctamente, presiona una tecla para atender otra solicitud\n");
+	getchar();
 	strcpy(command, "rm \0");
 	strcat(command, fileName);
 	system(command);
