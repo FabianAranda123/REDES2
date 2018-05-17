@@ -284,7 +284,7 @@ void getFile(int canal, char trama[])
 
 	memcpy(&fileName, &trama[5], 30);
 
-	fp = fopen(fileName, "w");     //ABRIENDO ARCHIVO DONDE SE JUNTARAN LAS PARTES QUE ENVIEN LOS WORKERS
+	//fp = fopen(fileName, "w");     //ABRIENDO ARCHIVO DONDE SE JUNTARAN LAS PARTES QUE ENVIEN LOS WORKERS
 
 	//////////DIRECCIONES DE WORKERS Y MIRRORS
 	strcpy(worker_addr, WORKER_ADDR);       //Direccion de los worker
@@ -406,7 +406,7 @@ void getFile(int canal, char trama[])
 
 
 
-	while((bytes_read = fread(fileData, sizeof(char), 100, fp))==100) //Mientras existan mas bytes por leer
+	while( ( bytes_read = fread(fileData, sizeof(char), 100, fp ) ) == 100 ) //Mientras existan mas bytes por leer
 	{
 		b_ini = '1';                                 //Indicamos que no es la ultima trama
 		memcpy(&datasend[0], &b_ini, 1);             //Copiando byte inical a la trama que se va a enviar       
@@ -418,6 +418,7 @@ void getFile(int canal, char trama[])
 		printf("Se metio al while\n");
 	}
 	printf("bytesread %d\n", bytes_read);
+	perror("ERROR EN FOPEN");
 	b_ini = '0';                                  //Indicamos que es la ultima trama
 	memcpy(&datasend[0], &b_ini, 1);              //Copiando byte inical a la trama que se va a enviar 
 	memcpy(&datasend[1], &bytes_read, 4);         //Copiando numero de bytes que se envian a la trama que se va a enviar
