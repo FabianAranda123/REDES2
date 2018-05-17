@@ -88,7 +88,7 @@ int main()
 
 		recv(canal, trama, sizeof(trama), 0);  //Recibimos la trama
 		send(canal, &flag, sizeof(char), 0);   //Enviamos confirmacion
-		recv(canal, &flag, sizeof(char), 0);
+		
 
 		if((trama[0] == '1') || (trama[0] == '0')) //Cliente nos envia un archivo
 		{
@@ -96,6 +96,7 @@ int main()
 		}
 		else if(trama[0] == '2') //Cliente quiere un archivo
 		{
+			recv(canal, &flag, sizeof(char), 0);
 			getFile(canal, trama); //Recuperando archivo de los 3 servidores
 		}
 		else

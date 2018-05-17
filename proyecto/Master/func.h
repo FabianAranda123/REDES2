@@ -87,7 +87,7 @@ void saveFile(int canal, char trama[])
 	memcpy(&fileData, &trama[35], 100); //Datos del archivo
 
 
-
+	printf("Nombre del archivo que se solicita : %s\n", fileName );
 
 	//////////////////// RECIBIENDO ARCHIVO Y ALMACENANDOLO DE MANERA LOCAL///////////////
 	fp = fopen(fileName, "w"); //Abrimos archivo temporal
