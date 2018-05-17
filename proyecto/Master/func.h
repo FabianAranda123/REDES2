@@ -239,10 +239,10 @@ void saveFile(int canal, char trama[])
 
 	//Eliminamos el archivo creado ya que ha sido enviado
 	printf("Archivo recibido correctamente, presiona una tecla para atender otra solicitud\n");
-	getchar();
+	/*getchar();
 	strcpy(command, "rm \0");
 	strcat(command, fileName);
-	system(command);
+	system(command);*/
 
 
 
@@ -291,7 +291,7 @@ void getFile(int canal, char trama[])
 	strcpy(workermirror_addr, MIRROR_ADDR); //Direccion de mirrors
 
 
-
+/*
 
 
 	///////PIDIENDO ARCHIVO A WORKER O MIRROR 1/////////////////
@@ -308,7 +308,7 @@ void getFile(int canal, char trama[])
 	memcpy(&datasend, &b_ini, 1);				 //Copiando byte inicial a la trama
 	memcpy(&datasend[5], &fileName, 30);		 //Copiando nombre del archivo a la trama
 	send(w, &datasend, sizeof(datasend), 0);     //Enviando trama solicitando archivo al worker
-	recv(w, flag, sizeof(flag), 0);
+	recv(w, &flag, sizeof(flag), 0);
 
 	recv(w, datarecv, sizeof(datarecv), 0);      //Recibiendo primera trama del worker
 	send(w, &flag, sizeof(flag), 0);
@@ -342,7 +342,7 @@ void getFile(int canal, char trama[])
 	memcpy(&datasend, &b_ini, 1);				 //Copiando byte inicial a la trama
 	memcpy(&datasend[5], &fileName, 30);		 //Copiando nombre del archivo a la trama
 	send(w, &datasend, sizeof(datasend), 0);     //Enviando trama solicitando archivo al worker
-	recv(w, flag, sizeof(flag), 0);
+	recv(w, &flag, sizeof(flag), 0);
 
 	recv(w, datarecv, sizeof(datarecv), 0);      //Recibiendo primera trama del worker
 	send(w, &flag, sizeof(flag), 0);
@@ -376,7 +376,7 @@ void getFile(int canal, char trama[])
 	memcpy(&datasend, &b_ini, 1);				 //Copiando byte inicial a la trama
 	memcpy(&datasend[5], &fileName, 30);		 //Copiando nombre del archivo a la trama
 	send(w, &datasend, sizeof(datasend), 0);     //Enviando trama solicitando archivo al worker
-	recv(w, flag, sizeof(flag), 0);
+	recv(w, &flag, sizeof(flag), 0);
 
 	recv(w, datarecv, sizeof(datarecv), 0);      //Recibiendo primera trama del worker
 	send(w, &flag, sizeof(flag), 0);
@@ -393,12 +393,18 @@ void getFile(int canal, char trama[])
 
 
 	fclose(fp); //Cerrando archivo que se tiene en local 
-	
+	*/
 
 	///////////ENVIANDO ARCHIVO AL CLIENTE/////////
 	printf("fileName : %s\n", fileName);
 	fp = fopen(fileName, "r");
-	printf("fp: %d", fp);
+	if(fp == NULL)
+	{
+		perror("ERROR EN FOPEN");
+		exit -1;
+	}
+
+
 
 	while((bytes_read = fread(fileData, sizeof(char), 100, fp))==100) //Mientras existan mas bytes por leer
 	{
@@ -423,9 +429,10 @@ void getFile(int canal, char trama[])
 	fclose(fp); //Cerrando archivo
 
 	//Eliminamos el archivo creado ya que ha sido enviado
+	/*
 	strcpy(command, "rm \0");
 	strcat(command, fileName);
 	system(command);
-
+	*/
 
 }
