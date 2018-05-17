@@ -73,7 +73,7 @@ int createServer(char dir[], int port)
 
 
 /////////Funcion que recibe parte del archivo que le corresponda guardar//////////////////////////////
-int saveFile(int canal, char trama[], int id_mirror )
+int saveFile(int canal, char trama[])
 {
 	char datarecv[135];
 	char b_ini;         //byte inicial que indica si es la ultima trama o no
@@ -99,10 +99,10 @@ int saveFile(int canal, char trama[], int id_mirror )
 					
 		//recibimos la trama para guardar el archivo y envimos al mirror 
 		recv(canal, datarecv, sizeof(datarecv), 0);  //Recibimos una nueva trama
-		send(id_mirror, datarecv, sizeof(datarecv), 0);
-		
 		send(canal, &cad, sizeof(char), 0);
-		recv(id_mirror, &cad, sizeof(char), 0);
+		
+		//send(id_mirror, datarecv, sizeof(datarecv), 0);	
+		//recv(id_mirror, &cad, sizeof(char), 0);
 		//Obtenemos los datos de la primer trama enviada
 		memcpy(&b_ini, &datarecv[0], 1);       //Byte inicial 0 si es la ultima trama o 1 si aun faltan tramas por recibir
 		memcpy(&fileSize, &datarecv[1], 4);    //Tamano de los datos que se enviaron
@@ -139,7 +139,7 @@ void getFile(int canal, char trama[])
 	char cad;
 
 	memcpy(&fileName, &trama[5], 30);	
-	fp = fopen(fileName, "w");
+	fp = fopen(fileName, "r");
 
 	fseek (fp , 0 , SEEK_END);
   	lSize = ftell (fp);
@@ -160,6 +160,7 @@ void getFile(int canal, char trama[])
 		memcpy(&dataSend[35], &fileData, 100);
 		send(canal, dataSend, sizeof(dataSend), 0);	
 		recv(canal, &cad, sizeof(char), 0);	
+		i++;
  	}
  	bytes_read = lSize % 100;
  	if(bytes_read != 0)

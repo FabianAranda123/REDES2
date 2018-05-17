@@ -75,16 +75,18 @@ int main(int argc, char* argv[]){
 		
 		recv(canal, trama, sizeof(trama), 0); //Recibimos la trama
 		send(canal, &cad, sizeof(char), 0); //Recibimos la trama
-		printf("El mirror recibio la primera trama\n");
+		//printf("El mirror recibio la primera trama\n");
 		memcpy(&byte_ini, &trama[0], 1);      //Obtenemos el primer byte
 
 		if((byte_ini == '1') || (byte_ini == '0')) //Cliente(Master) nos envia un archivo
 		{
+			printf("Opción 1\n");
 			saveFile(canal,trama); //Guardando archivo y dividiendolo entre los 3 workers
 			
 		}
 		else if(byte_ini == '2') //Master solicita un archivo
 		{
+			printf("Opción 2\n");
 			getFile(canal,trama); //Recuperando parte del archivo del mirror
 		}
 		else

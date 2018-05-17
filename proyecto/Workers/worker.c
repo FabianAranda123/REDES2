@@ -66,7 +66,7 @@ int main(int argc, char* argv[]){
 	
 	
 ///////// ETAPA DECOMUNICACIONES /////////////////////////
-
+	char fileName[30];
 	
 	while(1)  //Ciclo que permite estar siempre esperando peticiones del cliente
 	{
@@ -90,10 +90,10 @@ int main(int argc, char* argv[]){
 		if((byte_ini == '1') || (byte_ini == '0')) //Cliente(Master) nos envia un archivo
 		{
 		
-			send(id_mirror, trama, sizeof(trama), 0);
-			recv(id_mirror, &cad, sizeof(char), 0);
-			saveFile(canal,trama, id_mirror); //Guardando archivo 
-			
+			saveFile(canal,trama); //Guardando archivo 
+			memcpy(&fileName, &trama[5], 30); 
+			//printf("Nombre del archivo mod %s \n", fileName);
+			getFile(id_mirror,trama);
 		}
 		else if(byte_ini == '2') //Master solicita un archivo
 		{

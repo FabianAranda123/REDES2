@@ -89,13 +89,18 @@ int saveFile(int canal, char trama[])
 	char cad ='a';
 
 	//Obtenemos los datos de la primer trama enviada
+	printf("Opción 1\n");
 	memcpy(&b_ini, &trama[0], 1);       //Byte inicial 0 si es la ultima trama o 1 si aun faltan tramas por recibir
 	memcpy(&fileSize, &trama[1], 4);    //Tamano de los datos que se enviaron
 	memcpy(&fileName, &trama[5], 30);   //Nombre del archivo a guardar
 	memcpy(&fileData, &trama[35], 100); //Datos del archivo
 	
 	
-	fp = fopen(fileName, "W");  //Abriendo el archivo para guardar los datos que nos llegan;
+	
+	if((fp = fopen(fileName, "w"))==NULL)
+	{
+		printf("No se pudo abrir archivo \n");
+	}  //Abriendo el archivo para guardar los datos que nos llegan;
 	
 	
 	while(b_ini == '1')         //Minetras no sea la trama final
@@ -138,7 +143,7 @@ void getFile(int canal,char trama[])
 	char cad ='a';
 
 	memcpy(&fileName, &trama[5], 30);	
-	fp = fopen(fileName, "w");
+	fp = fopen(fileName, "r");
 	//Obtenemos el tamaño del archivo solicitado
 	fseek (fp  , 0 , SEEK_END);
   	lSize = ftell (fp);
@@ -158,7 +163,8 @@ void getFile(int canal,char trama[])
 		memcpy(&dataSend[5], &fileName, 30);
 		memcpy(&dataSend[35], &fileData, 100);
 		send(canal, dataSend, sizeof(dataSend), 0);
-		recv(canal, &cad, sizeof(char), 0);	
+		recv(canal, &cad, sizeof(char), 0);
+		i++;	
  	
  	}
  	bytes_read = lSize % 100;
