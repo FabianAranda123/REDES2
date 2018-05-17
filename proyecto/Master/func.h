@@ -120,7 +120,7 @@ void saveFile(int canal, char trama[])
 
 	fclose(fp); //Cerramos archivo temporal
 	printf("Archivo recibido exitosamente  +..+  Bytes recibidos: %d\n",contador );
-
+/*
 
 	/////////////////// DIVIDIENDO ARCHIVO ENTRE 3 WORKERS///////////////////
 	
@@ -239,12 +239,12 @@ void saveFile(int canal, char trama[])
 
 	//Eliminamos el archivo creado ya que ha sido enviado
 	printf("Archivo recibido correctamente, presiona una tecla para atender otra solicitud\n");
-	/*getchar();
+	getchar();
 	strcpy(command, "rm \0");
 	strcat(command, fileName);
-	system(command);*/
+	system(command);
 
-
+*/
 
 
 }
