@@ -1,0 +1,68 @@
+1.- ¿Qué es el reconocimiento de patrones?
+- Es la ciencia que se ocupa de los procesos sobre ingeniería, computación y matemáticas relacionados con objetos físicos y/o
+abstractos, con el propósito de extraer información que permita establecer propiedades de o entre conjuntos de dichos objetos.
+- El término de reconocimiento de patrones se refiere a un procesamiento de información que tiene una gran importancia práctica que da 
+solución a un amplio rango de problemas.
+-En términos más concretos, el Reconocimiento de Patrones como una disciplina científica tiene el objetivo de clasificar objetos en un 
+número específico de categorías o clases. Dependiendo de la aplicación, estos objetos pueden ser imágenes, sonidos, olores, en general, 
+señales producto de mediciones que deben ser clasificadas. Estos objetos se denotan con el término genérico de patrones. [
+- Dado un universo de estudio, el objetivo de un sistema de reconocimiento de patrones consiste en particionar dicho universo en clases 
+"patrón" ajenas, de tal manera que el sistema asignará a un elemento x a una y sólo una clase. Es decir, el problema es de
+clasificación, el sistema reconoce que un elemento pertenece a una clase.
+Partes del problema: 
+	aislar los objetos (segmentación) 
+	extraer las características que discriminan los objetos
+	construir el sistema de clasificación definiendo una distancia que permita medir que tan próximo es el elemento a cada una de las 
+	clases y en este sentido clasificar x en la clase cuyastancia se acerque más. 
+** El término de reconocimiento de patrones se refiere a un proceso de obtención de información relacionada con objetos físicos y/o
+abstractos, que permita clasificar objetos en un número específico de categorías o clases y establecer propiedades de o entre conjuntos 
+de dichos objetos.
+
+2.- Clasificar objetos en cateogrias o clases
+- Un sistema inteligente(SI) es un sistema que aprende durante su existencia como actuar para alcanzar sus objetivos
+- Para la Clasificación
+La selección de características relevantes, a partir del conjunto total de características que describen a los objetos, se hace con dos 
+motivos fundamentales: mejorar la clasificación y/o aumentar la velocidad de procesamiento.
+-Para  la  Representación
+Decidir  cuáles  características representan mejor a cierto tipo de objetos
+
+3.-
+-El sensor
+El sensor es el dispositivo encargado de la adquisición de datos. Ha de ser capaz de transformar magnitudes físicas o químicas, llamadas variables de instrumentación, en magnitudes eléctricas. Las variables de instrumentación dependen del tipo de sensor y pueden ser por ejemplo: temperatura, intensidad lumínica, distancia, aceleración, inclinación, desplazamiento, presión, fuerza, torsión, humedad, etc.
+
+-Extracción de características
+Dependiendo del problema específico, de los variables que capturan los sensores, algunos sirven para el reconocimiento. Estos se 
+denominan características.
+Es el proceso de generar características que puedan ser usadas en el proceso de clasificación de los datos. En ocasiones viene precedido por un preprocesado de la señal, necesario para corregir posibles deficiencias en los datos debido a errores del sensor, o bien para preparar los datos de cara a posteriores procesos en las etapas de extracción de características o clasificación.
+
+Las características elementales están explícitamente presentes en los datos adquiridos y pueden ser pasados directamente a la etapa de clasificación. Las características de alto orden son derivadas de las elementales y son generadas por manipulaciones o transformaciones en los datos
+
+-Selección de características
+En la práctica, se generan un número innecesario de características, entonces el mejor subconjunto de ellas debe ser seleccionado.
+Consiste en seleccionar cuál es el tipo de características o rasgos más adecuados para describir los objetos. Para ello, se deben localizar los rasgos que inciden en el problema de manera determinante.
+
+Esta etapa también puede ser diseñada dentro de la clasificación.
+
+La selección de variables puede diferenciarse según los objetivos buscados:
+
+        Para la clasificación: la selección de características relevantes, a partir del conjunto total de características que describen a los objetos, se hace con dos motivos fundamentales: mejorar la clasificación o aumentar la velocidad de procesamiento.
+        Para la representación: decidir qué características representan mejor a cierto tipo de objetos.
+
+Estrategias de selección de variables:
+
+        wrapper: la selección de características se hace usando información del mecanismo de clasificación.
+        filter: la selección se hace con un criterio independiente del clasificador. Incluye algunos métodos como:
+
+            Tablas de decisión: le busca un subconjunto mínimo de variables que no introduzca confusión entre clases.
+            ID3: le crea un árbol de decisión y se selecciona un conjunto de variables que permita discriminar entre clases.
+            Teoría de testores: le buscan todos los subconjuntos de variables discriminantes minimales, con estos se evalúa la relevancia de cada variable y se seleccionan aquellas con mayor relevancia.
+
+
+
+-Diseño del clasificador
+Habiendo ya elegido el subconjunto de características adecuadas a un problema específico, es necesario diseñar el sistema clasificador 
+que en resumen es una función que mapea el valor de las características en un conjunto de categorías o clases.
+Finalmente, es necesario evaluar que tan bueno es el reconocimiento de patrones. El proceso de evaluación del sistema deberá calcular 
+las tasas de certeza y tasa del error de clasificación.
+
+
